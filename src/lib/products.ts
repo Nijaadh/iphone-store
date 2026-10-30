@@ -1,5 +1,6 @@
 import { createPublicClient } from "@/lib/supabase/public";
 import type { Condition, Product } from "@/lib/types";
+import { isUuid } from "@/lib/uuid";
 
 export type SortKey = "newest" | "price_asc" | "price_desc";
 
@@ -93,9 +94,7 @@ export async function listFilterOptions(): Promise<{
 
 export async function getProduct(id: string): Promise<Product | null> {
   // Guard: Postgres errors on a malformed uuid, so reject bad ids early.
-  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
-    return null;
-  }
+  if (!isUuid(id)) return null;
   const supabase = createPublicClient();
   const { data } = await supabase
     .from("products")
@@ -117,4 +116,14 @@ export async function listProductsForSitemap(): Promise<
     .order("created_at", { ascending: false })
     .limit(1000);
   return (data ?? []) as { id: string; created_at: string }[];
+}
+
+// Used by the cart: the phones the shopper picked, with current price and status.
+export async function listProductsByIds(ids: string[]): Promise<Product[]> {
+  const valid = ids.filter(isUuid);
+  if (valid.length === 0) return [];
+
+  const supabase = createPublicClient();
+  const { data } = await supabase.from("products").select("*").in("id", valid);
+  return (data ?? []) as Product[];
 }

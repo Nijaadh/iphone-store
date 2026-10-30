@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import SiteHeader from "@/components/shop/SiteHeader";
 import SiteFooter from "@/components/shop/SiteFooter";
 import Gallery from "@/components/shop/Gallery";
+import AddToCartButton from "@/components/shop/AddToCartButton";
 import { getProduct } from "@/lib/products";
 import { formatLKR, storageLabel } from "@/lib/format";
 import { site, siteUrl } from "@/lib/site";
@@ -147,6 +148,13 @@ export default async function ProductPage({
             )}
 
             <div className="mt-8 flex flex-wrap gap-3">
+              {product.status === "available" ? (
+                <AddToCartButton id={product.id} />
+              ) : (
+                <span className="rounded-md border border-amber-300 bg-amber-50 px-6 py-3 text-sm font-medium text-amber-800">
+                  Reserved — ask us about it
+                </span>
+              )}
               {site.whatsapp ? (
                 <a
                   href={`https://wa.me/${site.whatsapp}?text=${waText}`}
@@ -164,9 +172,7 @@ export default async function ProductPage({
                 Keep browsing
               </Link>
             </div>
-            <p className="mt-3 text-xs text-neutral-500">
-              Online checkout is coming soon.
-            </p>
+
           </div>
         </div>
       </main>
