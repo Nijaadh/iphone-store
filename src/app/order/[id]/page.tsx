@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import SiteHeader from "@/components/shop/SiteHeader";
 import SiteFooter from "@/components/shop/SiteFooter";
-import { createSecretClient } from "@/lib/supabase/admin";
+import { createSecretClient, secretKey } from "@/lib/supabase/admin";
 import { formatLKR } from "@/lib/format";
 import { site } from "@/lib/site";
 import type { Order, Product } from "@/lib/types";
@@ -21,6 +21,7 @@ export default async function OrderPage({
 }) {
   const { id } = await params;
   if (!isUuid(id)) notFound();
+  if (!secretKey()) notFound();
 
   const supabase = createSecretClient();
   const { data: order } = await supabase

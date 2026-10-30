@@ -27,7 +27,7 @@ export type CheckoutResult =
   | { ok: true; orderId: string }
   | { ok: false; error: string; unavailable?: string[] };
 
-export async function placeOrder(formData: FormData): Promise<CheckoutResult> {
+async function createOrder(formData: FormData): Promise<CheckoutResult> {
   let ids: unknown = [];
   try {
     ids = JSON.parse(String(formData.get("ids") ?? "[]"));
@@ -111,4 +111,19 @@ export async function placeOrder(formData: FormData): Promise<CheckoutResult> {
     .eq("status", "available");
 
   return { ok: true, orderId: order.id };
+}
+
+// The form calls this. Any unexpected failure comes back as a message the
+// shopper can act on, instead of a crashed page.
+export async function placeOrder(formData: FormData): Promise<CheckoutResult> {
+  try {
+    return await createOrder(formData);
+  } catch (error) {
+    console.error("placeOrder failed:", error);
+    return {
+      ok: false,
+      error:
+        "We could not place your order right now. Please try again, or contact us and we will take it over the phone.",
+    };
+  }
 }
