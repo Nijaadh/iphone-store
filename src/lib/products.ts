@@ -90,3 +90,31 @@ export async function listFilterOptions(): Promise<{
   );
   return { models, storages };
 }
+
+export async function getProduct(id: string): Promise<Product | null> {
+  // Guard: Postgres errors on a malformed uuid, so reject bad ids early.
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
+    return null;
+  }
+  const supabase = createPublicClient();
+  const { data } = await supabase
+    .from("products")
+    .select("*")
+    .eq("id", id)
+    .in("status", VISIBLE)
+    .maybeSingle();
+  return (data as Product | null) ?? null;
+}
+
+export async function listProductsForSitemap(): Promise<
+  { id: string; created_at: string }[]
+> {
+  const supabase = createPublicClient();
+  const { data } = await supabase
+    .from("products")
+    .select("id, created_at")
+    .in("status", VISIBLE)
+    .order("created_at", { ascending: false })
+    .limit(1000);
+  return (data ?? []) as { id: string; created_at: string }[];
+}

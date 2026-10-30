@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { site, siteUrl } from "@/lib/site";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,7 +14,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Phone Store | iPhones in Sri Lanka",
+  metadataBase: new URL(siteUrl()),
+  title: {
+    default: `${site.name} | iPhones in Sri Lanka`,
+    template: `%s | ${site.name}`,
+  },
   description: "Buy brand new and used iPhones in Sri Lanka.",
 };
 

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { formatLKR, storageLabel } from "@/lib/format";
 import type { Product } from "@/lib/types";
 
@@ -6,7 +7,10 @@ export default function ProductCard({ product: p }: { product: Product }) {
   const details = [storageLabel(p.storage_gb), p.color].filter(Boolean).join(" · ");
 
   return (
-    <article className="overflow-hidden rounded-xl border border-neutral-200 bg-white">
+    <Link
+      href={`/phones/${p.id}`}
+      className="block overflow-hidden rounded-xl border border-neutral-200 bg-white transition hover:border-neutral-400 hover:shadow-sm"
+    >
       <div className="relative aspect-square bg-neutral-100">
         {p.images[0] ? (
           <Image
@@ -41,6 +45,6 @@ export default function ProductCard({ product: p }: { product: Product }) {
         ) : null}
         <p className="pt-1 text-base font-semibold">{formatLKR(p.price_lkr)}</p>
       </div>
-    </article>
+    </Link>
   );
 }
