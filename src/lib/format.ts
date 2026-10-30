@@ -4,3 +4,7 @@ export function formatLKR(amount: number) {
     new Intl.NumberFormat("en-LK", { maximumFractionDigits: 0 }).format(amount)
   );
 }
+
+export function storageLabel(gb: number) {
+  return gb >= 1024 ? `${gb / 1024}TB` : `${gb}GB`;
+}
